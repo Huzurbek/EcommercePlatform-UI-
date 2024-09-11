@@ -10,8 +10,7 @@ type TParams = {
   limit: number;
   page: number;
   catIds: string;
-  // brandId: string;
-  // typeId: string;
+  brandIds: string;
 };
 export interface FetchProductsError {
   message: string;
@@ -27,6 +26,7 @@ export const fetchProducts = createAsyncThunk<
         limit: params.limit,
         page: params.page,
         catIds: params.catIds,
+        brandIds: params.brandIds,
       },
     });
     return response.data as TProductsResponse;

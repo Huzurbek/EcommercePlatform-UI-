@@ -10,18 +10,29 @@ type TBrandState = {
   brands: TBrand[];
   isLoading: boolean;
   error: string;
+  selectedBrandIds: number[];
 };
 
 const initialState: TBrandState = {
   brands: [],
   isLoading: false,
   error: "",
+  selectedBrandIds: [],
 };
 
 export const brandSlice = createSlice({
   name: "brand",
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedBrandIds: (state, action: PayloadAction<number>) => {
+      const index = state.selectedBrandIds.indexOf(action.payload);
+      if (index !== -1) {
+        state.selectedBrandIds.splice(index, 1);
+      } else {
+        state.selectedBrandIds.push(action.payload);
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchBrands.pending, (state) => {
@@ -40,5 +51,5 @@ export const brandSlice = createSlice({
       });
   },
 });
-
+export const { setSelectedBrandIds } = brandSlice.actions;
 export default brandSlice.reducer;

@@ -1,27 +1,56 @@
-import { useEffect } from "react";
-import { List, ListItem, ListItemButton } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { fetchBrands } from "../../features/brands/brandsApi";
-import { TBrand } from "../../features/brands/brandsSlice";
+import { setSelectedBrandIds, TBrand } from "../../features/brands/brandsSlice";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  FormGroup,
+  List,
+  ListItem,
+} from "@mui/material";
 
 const BrandSideBar = () => {
-  const { brands } = useAppSelector((state) => state.brandReducer);
-
+  const { brands, selectedBrandIds } = useAppSelector(
+    (state) => state.brandReducer
+  );
   const dispatch = useAppDispatch();
+  const [visiable, setVisiable] = useState(10);
+
   useEffect(() => {
     dispatch(fetchBrands());
   }, [dispatch]);
 
+  const handleChange = (brandId: number) => {
+    dispatch(setSelectedBrandIds(brandId));
+  };
+
   return (
-    <List>
-      {brands.map((item) => (
-        <BrandItem
-          key={item.brandId}
-          item={item}
-          onClick={(val) => console.log("brand is clicked", val)}
-        />
-      ))}
-    </List>
+    <>
+      <List>
+        <FormGroup>
+          {brands.slice(0, visiable).map((item) => (
+            <BrandItem
+              key={item.brandId}
+              item={item}
+              handleChange={handleChange}
+              selectedBrands={selectedBrandIds}
+            />
+          ))}
+        </FormGroup>
+      </List>
+      <Box ml="23px" mb="10px">
+        <Button
+          variant="text"
+          color="secondary"
+          onClick={() => setVisiable(visiable <= 10 ? brands.length : 10)}
+        >
+          {visiable <= 10 ? "Load more.." : "Show less"}
+        </Button>
+      </Box>
+    </>
   );
 };
 
@@ -29,10 +58,12 @@ export default BrandSideBar;
 
 const BrandItem = ({
   item,
-  onClick,
+  handleChange,
+  selectedBrands,
 }: {
   item: TBrand;
-  onClick: (item: TBrand) => void;
+  handleChange: (value: number) => void;
+  selectedBrands: number[];
 }) => {
   return (
     <ListItem
@@ -41,17 +72,16 @@ const BrandItem = ({
         display: "flex",
       }}
     >
-      <ListItemButton
-        onClick={() => onClick(item)}
-        sx={{
-          padding: "6px 8px",
-          borderRadius: "4px",
-          maxWidth: "fit-content",
-          marginLeft: "23px",
-        }}
-      >
-        {item.brandName}
-      </ListItemButton>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={selectedBrands.includes(item.brandId)}
+            onChange={() => handleChange(item.brandId)}
+          />
+        }
+        label={item.brandName}
+        sx={{ marginLeft: "23px" }}
+      />
     </ListItem>
   );
 };

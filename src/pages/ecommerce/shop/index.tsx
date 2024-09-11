@@ -10,6 +10,7 @@ const Shop = () => {
   const { products, isLoading, pagination } = useAppSelector(
     (state) => state.productReducer
   );
+  const { selectedBrandIds } = useAppSelector((state) => state.brandReducer);
   const { nestedSubcategories } = useAppSelector(
     (state) => state.categoryReducer
   );
@@ -28,9 +29,10 @@ const Shop = () => {
         limit,
         page,
         catIds: catIds.join(","),
+        brandIds: selectedBrandIds.join(","),
       })
     );
-  }, [dispatch, limit, page, catIds]);
+  }, [dispatch, limit, page, catIds, selectedBrandIds]);
 
   return (
     <Box display="flex" gap={4}>
